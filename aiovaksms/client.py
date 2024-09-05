@@ -16,7 +16,7 @@ from .models import *
 
 class VakSms:
     """
-    AAIO client for API interaction
+    VakSms client for API interaction
     Session will be automatically closed
 
     API for https://vak-sms.com/

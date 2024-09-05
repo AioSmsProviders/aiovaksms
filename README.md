@@ -1,10 +1,6 @@
-# AAIO API for Python 3
+# VAKSMS API for Python 3
 
 <div align="center">
-
-<a href="https://aaio.so/" target="_blank">
-	<img alt="AAIO Badge" src="https://aaio.so/assets/svg/banners/big/dark-2.svg" title="Aaio - Сервис по приему онлайн платежей">
-</a>
 
 [![lolkof - AIOVAKSMS](https://img.shields.io/static/v1?label=lolkof&message=AIOVAKSMS&color=blue&logo=github)](https://github.com/lolkofka/aiovaksms "Go to GitHub repo")
 

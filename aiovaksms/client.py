@@ -245,7 +245,6 @@ class VakSms:
             async with session.get(uri, headers=headers,
                                    params={k: v for k, v in params.items() if v is not None}) as r:
                 response = await r.json(content_type=None)
-                print(response)
                 if not isinstance(response, dict) or not response.get('error'):
                     return response
                 else:

@@ -1,0 +1,8 @@
+/venv/
+/.venv/
+/.idea/
+/build/
+/aiovaksms.egg-info/
+/dist/
+/site/
+main.py

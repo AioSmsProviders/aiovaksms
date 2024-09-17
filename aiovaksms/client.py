@@ -117,7 +117,7 @@ class VakSms:
         params = {
             'service': service,
             'operator': operator,
-            'rent': str(rent),
+            'rent': 'true' if rent else 'false',
             'country': country,
             'softId': soft_id
         }
@@ -217,6 +217,31 @@ class VakSms:
         response = await self.__create_request('/api/getSmsCode/', params)
         
         return SmsCode(**response)
+    
+    async def get_count_number_list(self, country: str = 'RU', operator: str | None = None, rent: bool = False):
+        """
+        Get all services and prices, count, full name of service
+
+        Its method not in official docs
+
+        Returns: Model from response JSON
+        """
+        
+        params = {
+            'country': country,
+            'rent': 'true' if rent else 'false',
+        }
+        if operator:
+            params['operator'] = operator
+        
+        response = await self.__create_request('/api/getCountNumbersList/', params)
+        
+        ret_d = {}
+        for service in response.keys():
+            s = Service(**response[service][0])
+            s.icon = self._base_urls[0]+s.icon
+            ret_d[service] = s
+        return ret_d
     
     async def __create_request(self, uri: str, params: dict = None) -> Optional[dict]:
         """

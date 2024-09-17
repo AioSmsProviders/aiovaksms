@@ -3,7 +3,7 @@ from typing import List
 
 
 class Number(BaseModel):
-    tel: str|int
+    tel: str | int
     service: str
     idNum: str
 

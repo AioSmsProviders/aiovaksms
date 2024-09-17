@@ -1,3 +1,4 @@
+import asyncio
 import hashlib
 import logging
 from typing import List, Optional
@@ -23,7 +24,7 @@ class VakSms:
     """
     
     def __init__(self, api_key: str | None = None,
-                 base_urls: list = None):
+                 base_urls: list = None, timeout: int = 10):
         """
         Creates instance of one vaksms API client
 
@@ -34,6 +35,7 @@ class VakSms:
         
         self._api_key = api_key
         self._base_urls = BaseUrls().urls if base_urls is None else base_urls
+        self.timeout = timeout
     
     async def get_balance(self) -> float:
         """
@@ -265,12 +267,18 @@ class VakSms:
         
         if self._api_key:
             params['apiKey'] = self._api_key
+        for i, base_url in enumerate(self._base_urls.copy()):
+            async with aiohttp.ClientSession(base_url) as session:
+                try:
+                    async with session.get(uri, headers=headers,
+                                           params={k: v for k, v in params.items() if v is not None}, timeout=self.timeout) as r:
+                        response = await r.json(content_type=None)
+                        if not isinstance(response, dict) or not response.get('error'):
+                            return response
+                        else:
+                            raise VakSmsBadRequest(response['error'])
+                except (aiohttp.ClientError, asyncio.TimeoutError) as e:
+                    logging.error(f'Cannot connect to {base_url}, trying to connect next domain, pls change base_urls, {e}')
+                    self._base_urls.append(self._base_urls.pop(i))
         
-        async with aiohttp.ClientSession(self._base_urls[0]) as session:
-            async with session.get(uri, headers=headers,
-                                   params={k: v for k, v in params.items() if v is not None}) as r:
-                response = await r.json(content_type=None)
-                if not isinstance(response, dict) or not response.get('error'):
-                    return response
-                else:
-                    raise VakSmsBadRequest(response['error'])
+        raise VakSmsBadRequest('connectionError')

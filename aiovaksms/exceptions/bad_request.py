@@ -10,7 +10,8 @@ class VakSmsBadRequest(Exception):
         'badStatus': 'Status not correct.',
         'idNumNotFound': 'idNum not found.',
         'badService': 'Incorrect website, service, social code. networks.',
-        'badData': 'Invalid data sent.'
+        'badData': 'Invalid data sent.',
+        'connectionError': 'Not connect to domain'
     }
     
     def __init__(self, code: str) -> None:

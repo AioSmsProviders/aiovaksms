@@ -235,13 +235,12 @@ class VakSms:
         
         params = {
             'country': country,
-            'rent': 'true' if rent else 'false',
         }
         if operator:
             params['operator'] = operator
+        params['rent'] = 'True' if rent else 'False',
         
         response = await self.__create_request('/api/getCountNumbersList/', params)
-        
         ret_d = {}
         for service in response.keys():
             s = Service(**response[service][0])

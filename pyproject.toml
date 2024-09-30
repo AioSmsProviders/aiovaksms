@@ -7,7 +7,7 @@ packages = ["src/vaksms"]
 
 [project]
 name = "aiovaksms"
-version = "1.1.0"
+version = "1.1.1"
 description = "Async VakSms api wrapper for python"
 readme = "README.md"
 authors = [{ name = "lolkof", email = "lolkofprog@gmail.com" }]
@@ -20,7 +20,7 @@ classifiers = [
 keywords = ["payments", "api", "vaksms", "rent", "number"]
 requires-python = ">=3.7"
 dependencies = [
-  "aiohttp", "pydantic", "asyncio"
+  "aiohttp", "pydantic", "asyncio", "cachetools"
 ]
 
 [project.urls]

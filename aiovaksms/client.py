@@ -1,8 +1,7 @@
 import asyncio
-import hashlib
 import logging
 from typing import List, Optional
-from urllib.parse import urlencode
+from cachetools import TTLCache, cached
 
 try:
     from typing import Literal
@@ -14,7 +13,9 @@ import aiohttp
 from .exceptions import VakSmsBadRequest
 from .models import *
 
-
+cache_all_data = TTLCache(maxsize=100, ttl=3600) # 1 hour chache
+cache = TTLCache(maxsize=100, ttl=3600) # 1 hour chache
+cache_countries = TTLCache(maxsize=100, ttl=3600) # 1 hour chache
 class VakSms:
     """
     VakSms client for API interaction
@@ -52,6 +53,7 @@ class VakSms:
         
         return response['balance']
     
+    @cached(cache)
     async def get_count_number(self, service: str, operator: str = None, country: str = 'ru') -> CountNumber:
         """
         Creates a request for get count and price of number
@@ -80,6 +82,7 @@ class VakSms:
         response['count'] = response[list(response.keys())[0]]
         return CountNumber(**response)
     
+    @cached(cache_countries)
     async def get_country_list(self) -> list[CountryOperator]:
         """
         Creates a request for get countries and operators inside a country
@@ -220,6 +223,7 @@ class VakSms:
         
         return SmsCode(**response)
     
+    @cached(cache_all_data)
     async def get_count_number_list(self, country: str = 'RU', operator: str | None = None, rent: bool = False):
         """
         Get all services and prices, count, full name of service

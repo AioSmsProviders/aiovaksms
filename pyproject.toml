@@ -2,12 +2,9 @@
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/vaksms"]
-
 [project]
 name = "aiovaksms"
-version = "2.0.1"
+version = "2.0.2"
 description = "Async VakSms api wrapper for python"
 readme = "README.md"
 authors = [{ name = "lolkof", email = "lolkofprog@gmail.com" }, { name = "kewldan", email = "kewldanil1@gmail.com" }]

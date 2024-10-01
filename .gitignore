@@ -6,3 +6,4 @@
 /dist/
 /site/
 main.py
+*.pyc

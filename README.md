@@ -105,7 +105,15 @@ async def main():
     client = VakSms('TOKEN') # use vaksms.com domain (not work in russia)
     client = VakSms('TOKEN', base_url='moresms.net') # work in russia
     data = await client.get_number('ya')
-    print(data)  # tel=79296068469 service='ya' idNum='1725546315697382'
+    
+    # An exclusive function for obtaining the lifetime of a number
+    # all known services whose lifetime differs from the standard 20 minutes
+    # are included in the library database as of 10/02/2024
+    # also work with "rent=True" parameter
+    print(data.lifetime) # 1200 lifetime from date of purchase
+    print(data.lives_up_to) # 1727823949 unix time of death
+    
+    print(data)  # tel=79296068469 service='ya' idNum='1725546315697382' lifetime=1200 lives_up_to=1727823949
 
 
 asyncio.run(main())

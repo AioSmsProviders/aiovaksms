@@ -133,7 +133,7 @@ class VakSms:
         else:
             response['service'] = service
 
-        return Number(**response)
+        return Number(**response, rent=rent)
 
     async def prolong_number(self, service: str, tel: str | int,
                              soft_id: str = '1019'):

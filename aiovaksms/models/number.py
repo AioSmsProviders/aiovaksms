@@ -32,8 +32,8 @@ class Number(BaseModel):
             self.lifetime = not_standart_numbers.get(self.service, 1200)
             self.lives_up_to = int(time.time() + not_standart_numbers.get(self.service, 1200))
         else:
-            self.lifetime = 28800
-            self.lives_up_to = int(time.time() + 28800)
+            self.lifetime = 14400
+            self.lives_up_to = int(time.time() + 14400)
 
 
 class MultipleResponse(RootModel):

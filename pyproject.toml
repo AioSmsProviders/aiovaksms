@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "aiovaksms"
-version = "2.1.0"
+version = "2.1.1"
 description = "Async VakSms api wrapper for python"
 readme = "README.md"
 authors = [{ name = "lolkof", email = "lolkofprog@gmail.com" }, { name = "kewldan", email = "kewldanil1@gmail.com" }]

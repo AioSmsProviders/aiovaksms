@@ -20,7 +20,7 @@ API is up-to-date as of *01 October 2024*.
 
 * PyPl - https://pypi.org/project/aiovaksms/
 * Github - https://github.com/AioSmsProviders/aiovaksms
-* Requirements: Python >= 3.9
+* Requirements: Python >= 3.10
 
 ### Features
 
@@ -30,7 +30,7 @@ API is up-to-date as of *01 October 2024*.
 * The library returns strictly typed for responses from APIs
 * For each method, **docstrings** are used
 * The library handle {type: error} responses and throws VakSmsBadRequest exception
-* **Modern**, strict code for Python 3.9
+* **Modern**, strict code for Python 3.10+
 
 ## Library Installation
 
@@ -49,7 +49,7 @@ from aiovaksms import VakSms
 
 async def main():
     client = VakSms('TOKEN') # use vaksms.com domain (not work in russia)
-    client = VakSms('TOKEN', base_urls=['moresms.net']) # work in russia
+    client = VakSms('TOKEN', base_url='moresms.net') # work in russia
     balances = await client.get_balance()
     print(balances)  # balance = 100.0
 
@@ -66,7 +66,7 @@ from aiovaksms import VakSms
 
 async def main():
     client = VakSms('TOKEN') # use vaksms.com domain (not work in russia)
-    client = VakSms('TOKEN', base_urls=['moresms.net']) # work in russia
+    client = VakSms('TOKEN', base_url='moresms.net') # work in russia
     
     data = await client.get_count_number('cp')
     print(data)  # service='cp' count=4663 price=18.0
@@ -85,7 +85,7 @@ from aiovaksms import VakSms
 
 async def main():
     client = VakSms('TOKEN') # use vaksms.com domain (not work in russia)
-    client = VakSms('TOKEN', base_urls=['moresms.net']) # work in russia
+    client = VakSms('TOKEN', base_url='moresms.net') # work in russia
     data = await client.get_country_list()
     print(data)  # [CountryOperator(countryName='Tajikistan', countryCode='tj', operatorList=['babilon mobile', 'beeline', 'megafon', 'tcell']), CountryOperator(countryName='Zimbabwe', countryCode='zw', operatorList=['econet', 'netone', 'telecel'])... ]
 
@@ -103,7 +103,7 @@ from aiovaksms import VakSms
 
 async def main():
     client = VakSms('TOKEN') # use vaksms.com domain (not work in russia)
-    client = VakSms('TOKEN', base_urls=['moresms.net']) # work in russia
+    client = VakSms('TOKEN', base_url='moresms.net') # work in russia
     data = await client.get_number('ya')
     print(data)  # tel=79296068469 service='ya' idNum='1725546315697382'
 
@@ -121,7 +121,7 @@ from aiovaksms import VakSms
 
 async def main():
     client = VakSms('TOKEN')  # use vaksms.com domain (not work in russia)
-    client = VakSms('TOKEN', base_urls=['moresms.net'])  # work in russia
+    client = VakSms('TOKEN', base_url='moresms.net')  # work in russia
     data = await client.get_sms_code('1725546315697382') # 1725546315697382 is number id (idNum)
     print(data)  # smsCode='1234'
 
@@ -139,7 +139,7 @@ from aiovaksms import VakSms
 
 async def main():
     client = VakSms('TOKEN') # use vaksms.com domain (not work in russia)
-    client = VakSms('TOKEN', base_urls=['moresms.net']) # work in russia
+    client = VakSms('TOKEN', base_url='moresms.net') # work in russia
     data = await client.set_status('1725546315697382', 'send') # 1725546315697382 is number id (idNum)
     print(data)  # ready
 
@@ -158,7 +158,7 @@ from aiovaksms import VakSms
 
 async def main():
     client = VakSms('TOKEN') # use vaksms.com domain (not work in russia)
-    client = VakSms('TOKEN', base_urls=['moresms.net']) # work in russia
+    client = VakSms('TOKEN', base_url='moresms.net') # work in russia
     data = await client.get_count_number_list()
     print(data)  # {'mr': Service(name='VK - MailRu', icon='https://vak-sms.com/static/service/mr.png', info='Тут можно принять смс от сервисов VKGroup.Не забывайте проверять номера на занятость через восстановление. Подробнее в базе знаний - https://bit.ly/3M6tXup', cost=22.0, rent=False, quantity=41153, private=False), ... }
     print(data['mr'].name) # VK - MailRu

@@ -1,5 +1,3 @@
-from typing import List
-
 from pydantic import BaseModel, RootModel
 
 
@@ -10,4 +8,4 @@ class Number(BaseModel):
 
 
 class MultipleResponse(RootModel):
-    root: List[Number]
+    root: list[Number]

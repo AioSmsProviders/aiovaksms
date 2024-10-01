@@ -1,4 +1,0 @@
-pydantic~=2.8.2
-aiohttp~=3.10.5
-typing_extensions~=4.12.2
-cachetools

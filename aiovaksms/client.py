@@ -1,21 +1,19 @@
 import asyncio
 import logging
-from typing import List, Optional
-from cachetools import TTLCache, cached
+from typing import Literal
+from typing import Optional
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
-    
 import aiohttp
+from cachetools import TTLCache, cached
 
 from .exceptions import VakSmsBadRequest
 from .models import *
 
-cache_all_data = TTLCache(maxsize=100, ttl=3600) # 1 hour chache
-cache = TTLCache(maxsize=100, ttl=3600) # 1 hour chache
-cache_countries = TTLCache(maxsize=100, ttl=3600) # 1 hour chache
+cache_all_data = TTLCache(maxsize=100, ttl=3600)  # 1 hour cache
+cache = TTLCache(maxsize=100, ttl=3600)  # 1 hour cache
+cache_countries = TTLCache(maxsize=100, ttl=3600)  # 1 hour cache
+
+
 class VakSms:
     """
     VakSms client for API interaction
@@ -23,9 +21,9 @@ class VakSms:
 
     API for https://vak-sms.com/
     """
-    
+
     def __init__(self, api_key: str | None = None,
-                 base_urls: list = None, timeout: int = 10):
+                 base_urls: list[str] | None = None, timeout: int = 10):
         """
         Creates instance of one vaksms API client
 
@@ -33,11 +31,11 @@ class VakSms:
             api_key: API key from https://vak-sms.com/lk/
             base_urls: list of Base URLs for requests (Optional)
         """
-        
+
         self._api_key = api_key
         self._base_urls = BaseUrls().urls if base_urls is None else base_urls
         self.timeout = timeout
-    
+
     async def get_balance(self) -> float:
         """
         Creates a request for get balances of user
@@ -45,14 +43,14 @@ class VakSms:
 
         Returns: float of balance
         """
-        
+
         if not self._api_key:
             raise ValueError('API key is required for this method')
-        
+
         response = await self.__create_request('/api/getBalance/')
-        
+
         return response['balance']
-    
+
     @cached(cache)
     async def get_count_number(self, service: str, operator: str = None, country: str = 'ru') -> CountNumber:
         """
@@ -66,22 +64,22 @@ class VakSms:
         
         Returns: Model from response JSON
         """
-        
+
         if not self._api_key:
             raise ValueError('API key is required for this method')
-        
+
         params = {
             'service': service,
             'operator': operator,
             'country': country,
             'price': 1,
         }
-        
+
         response = await self.__create_request('/api/getCountNumber/', params)
         response['service'] = list(response.keys())[0]
         response['count'] = response[list(response.keys())[0]]
         return CountNumber(**response)
-    
+
     @cached(cache_countries)
     async def get_country_list(self) -> list[CountryOperator]:
         """
@@ -90,15 +88,16 @@ class VakSms:
 
         Returns: list of Model from response JSON
         """
-        
+
         if not self._api_key:
             raise ValueError('API key is required for this method')
-        
+
         response = await self.__create_request('/api/getCountryList/')
-        
+
         return CountryList(response).root
-    
-    async def get_number(self, service: str | list, operator: str = None, rent=False, country: str = 'ru', soft_id='1019'):
+
+    async def get_number(self, service: str | list, operator: str = None, rent=False, country: str = 'ru',
+                         soft_id='1019'):
         """
         Creates a request for buying number
         See https://vak-sms.com/api/vak/
@@ -112,13 +111,13 @@ class VakSms:
         
         Returns: Model from response JSON
         """
-        
+
         if not self._api_key:
             raise ValueError('API key is required for this method')
-        
+
         if isinstance(service, list):
             service = service[0] + ',' + service[1]
-        
+
         params = {
             'service': service,
             'operator': operator,
@@ -126,18 +125,18 @@ class VakSms:
             'country': country,
             'softId': soft_id
         }
-        
+
         response = await self.__create_request('/api/getNumber/', params)
-        
+
         if isinstance(response, list):
             return MultipleResponse(response).root
         else:
             response['service'] = service
-        
+
         return Number(**response)
-    
+
     async def prolong_number(self, service: str, tel: str | int,
-                         soft_id='1019'):
+                             soft_id: str = '1019'):
         """
         Creates a request for buying number
         See https://vak-sms.com/api/vak/
@@ -149,22 +148,22 @@ class VakSms:
 
         Returns: Model from response JSON
         """
-        
+
         if not self._api_key:
             raise ValueError('API key is required for this method')
-        
+
         params = {
             'service': service,
             'tel': tel,
             'softId': soft_id
         }
-        
+
         response = await self.__create_request('/api/prolongNumber/', params)
-        
+
         response['service'] = service
-        
+
         return Number(**response)
-    
+
     async def set_status(self, idNum: str, status: Literal['send', 'end', 'bad']):
         """
         Creates a request for buying number
@@ -185,44 +184,44 @@ class VakSms:
 
         Returns: status
         """
-        
+
         if not self._api_key:
             raise ValueError('API key is required for this method')
-        
+
         params = {
             'idNum': idNum,
             'status': status,
         }
-        
+
         response = await self.__create_request('/api/setStatus/', params)
-        
+
         return response['status']
-    
-    async def get_smscode(self, idNum: str, all: bool | None = None):
+
+    async def get_sms_code(self, number_id: str, get_all_numbers: bool | None = None):
         """
         Checking smscodes
 
         See https://vak-sms.com/api/vak/
 
         Args:
-            idNum: idNum of number
-            all: set True, to get all sms codes who came on number
+            number_id: idNum of number
+            get_all_numbers: set True, to get all sms codes who came on number
 
         Returns: Model from response JSON
         """
-        
+
         if not self._api_key:
             raise ValueError('API key is required for this method')
-        
+
         params = {
-            'idNum': idNum,
-            'all': str(all),
+            'idNum': number_id,
+            'all': str(get_all_numbers),
         }
-        
+
         response = await self.__create_request('/api/getSmsCode/', params)
-        
+
         return SmsCode(**response)
-    
+
     @cached(cache_all_data)
     async def get_count_number_list(self, country: str = 'RU', operator: str | None = None, rent: bool = False):
         """
@@ -232,22 +231,22 @@ class VakSms:
 
         Returns: Model from response JSON
         """
-        
+
         params = {
             'country': country,
         }
         if operator:
             params['operator'] = operator
         params['rent'] = 'True' if rent else 'False',
-        
+
         response = await self.__create_request('/api/getCountNumbersList/', params)
         ret_d = {}
         for service in response.keys():
             s = Service(**response[service][0])
-            s.icon = self._base_urls[0]+s.icon
+            s.icon = self._base_urls[0] + s.icon
             ret_d[service] = s
         return ret_d
-    
+
     async def __create_request(self, uri: str, params: dict = None) -> Optional[dict]:
         """
         Creates a request to base URL and adds URI
@@ -259,29 +258,32 @@ class VakSms:
         Returns: Model from response JSON
 
         """
-        
+
         if params is None:
             params = {}
-        
+
         headers = {
             'Accept': 'application/json',
             'Content-Type': 'application/x-www-form-urlencoded'
         }
-        
+
         if self._api_key:
             params['apiKey'] = self._api_key
+
         for i, base_url in enumerate(self._base_urls.copy()):
             async with aiohttp.ClientSession(base_url) as session:
                 try:
                     async with session.get(uri, headers=headers,
-                                           params={k: v for k, v in params.items() if v is not None}, timeout=self.timeout) as r:
+                                           params={k: v for k, v in params.items() if v is not None},
+                                           timeout=self.timeout) as r:
                         response = await r.json(content_type=None)
                         if not isinstance(response, dict) or not response.get('error'):
                             return response
                         else:
                             raise VakSmsBadRequest(response['error'])
                 except (aiohttp.ClientError, asyncio.TimeoutError) as e:
-                    logging.error(f'Cannot connect to {base_url}, trying to connect next domain, pls change base_urls, {e}')
+                    logging.error(
+                        f'Cannot connect to {base_url}, trying to connect next domain, pls change base_urls, {e}')
                     self._base_urls.append(self._base_urls.pop(i))
-        
+
         raise VakSmsBadRequest('connectionError')

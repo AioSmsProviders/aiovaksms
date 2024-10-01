@@ -2,7 +2,7 @@
 
 <div align="center">
 
-[![lolkof - AIOVAKSMS](https://img.shields.io/static/v1?label=lolkof&message=AIOVAKSMS&color=blue&logo=github)](https://github.com/lolkofka/aiovaksms "Go to GitHub repo")
+[![lolkof - AIOVAKSMS](https://img.shields.io/static/v1?label=lolkof&message=AIOVAKSMS&color=blue&logo=github)](https://github.com/AioSmsProviders/aiovaksms "Go to GitHub repo")
 
 [VAKSMS Official documentation](https://vak-sms.com/api/vak/)
 
@@ -122,7 +122,7 @@ from aiovaksms import VakSms
 async def main():
     client = VakSms('TOKEN')  # use vaksms.com domain (not work in russia)
     client = VakSms('TOKEN', base_urls=['moresms.net'])  # work in russia
-    data = await client.get_sms_code('1725546315697382')
+    data = await client.get_sms_code('1725546315697382') # 1725546315697382 is number id (idNum)
     print(data)  # smsCode='1234'
 
 
@@ -140,7 +140,7 @@ from aiovaksms import VakSms
 async def main():
     client = VakSms('TOKEN') # use vaksms.com domain (not work in russia)
     client = VakSms('TOKEN', base_urls=['moresms.net']) # work in russia
-    data = await client.set_status('1725546315697382', 'send')
+    data = await client.set_status('1725546315697382', 'send') # 1725546315697382 is number id (idNum)
     print(data)  # ready
 
 

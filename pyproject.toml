@@ -7,7 +7,7 @@ packages = ["src/vaksms"]
 
 [project]
 name = "aiovaksms"
-version = "2.0.0"
+version = "2.0.1"
 description = "Async VakSms api wrapper for python"
 readme = "README.md"
 authors = [{ name = "lolkof", email = "lolkofprog@gmail.com" }, { name = "kewldan", email = "kewldanil1@gmail.com" }]

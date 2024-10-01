@@ -95,7 +95,7 @@ class VakSms:
         Returns: list of Model from response JSON
         """
 
-        response = await self.__create_request('/api/getCountryList')
+        response = await self.__create_request('/api/getCountryList', api_key_required=False)
 
         return CountryList(response).root
 
@@ -233,7 +233,7 @@ class VakSms:
             params['operator'] = operator
         params['rent'] = 'True' if rent else 'False',
 
-        response = await self.__create_request('/api/getCountNumbersList', params)
+        response = await self.__create_request('/api/getCountNumbersList', params, api_key_required=False)
         ret_d = {}
         for service in response.keys():
             s = Service(**response[service][0])

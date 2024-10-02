@@ -135,7 +135,7 @@ class VakSms:
 
         return Number(**response, rent=rent)
 
-    async def prolong_number(self, service: str, tel: str | int,
+    async def prolong_number(self, service: str, tel: str | int, rent: bool = False,
                              soft_id: str = '1019'):
         """
         Creates a request for buying number
@@ -144,6 +144,7 @@ class VakSms:
         Args:
             service: service to continuation number
             tel: tel to continuation number, format: 79991112233
+            rent: bool need only for set lifetime
             soft_id: to get referral earnings (set 1019 to support creator this library) may be not work in this method
 
         Returns: Model from response JSON
@@ -159,7 +160,7 @@ class VakSms:
 
         response['service'] = service
 
-        return Number(**response)
+        return Number(**response, rent=rent)
 
     async def set_status(self, number_id: str, status: Literal['send', 'end', 'bad']):
         """

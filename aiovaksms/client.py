@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import time
 from typing import Literal
 
 import aiohttp
@@ -26,7 +27,7 @@ async def _send_request(base_url: str, uri: str, **kwargs) -> dict[str, ...]:
             raise ValueError('Invalid Base URL')
 
 
-class VakSms:
+class Vaksms:
     """
     VakSms client for API interaction
     Session will be automatically closed
@@ -100,7 +101,7 @@ class VakSms:
         return CountryList(response).root
 
     async def get_number(self, service: str | list, operator: str = None, rent: bool = False, country: str = 'ru',
-                         soft_id: str = '1019'):
+                         soft_id: str = '1019') -> Number | MultipleResponse:
         """
         Creates a request for buying number
         See https://vak-sms.com/api/vak/
@@ -133,7 +134,7 @@ class VakSms:
         else:
             response['service'] = service
 
-        return Number(**response, rent=rent)
+        return Number(self, **response, rent=rent)
 
     async def prolong_number(self, service: str, tel: str | int, rent: bool = False,
                              soft_id: str = '1019'):
@@ -162,7 +163,7 @@ class VakSms:
 
         return Number(**response, rent=rent)
 
-    async def set_status(self, number_id: str, status: Literal['send', 'end', 'bad']):
+    async def set_status(self, number: str | Number, status: Literal['send', 'end', 'bad']):
         """
         Creates a request for buying number
         statuses:
@@ -182,7 +183,8 @@ class VakSms:
 
         Returns: status
         """
-
+        
+        number_id = number if not type(number) is Number else number.idNum
         params = {
             'idNum': number_id,
             'status': status,
@@ -192,19 +194,19 @@ class VakSms:
 
         return response['status']
 
-    async def get_sms_code(self, number_id: str, get_all_numbers: bool | None = None):
+    async def get_sms_code(self, number: str | Number, get_all_numbers: bool | None = None) -> str | list[str]:
         """
         Checking sms codes
 
         See https://vak-sms.com/api/vak/
 
         Args:
-            number_id: idNum of number
+            number: idNum of number or Number object
             get_all_numbers: set True, to get all sms codes who came on number
 
-        Returns: Model from response JSON
+        Returns: Model from response JSON, one sms or list of smses
         """
-
+        number_id = number if not type(number) is Number else number.idNum
         if not self._api_key:
             raise ValueError('API key is required for this method')
 
@@ -215,8 +217,41 @@ class VakSms:
 
         response = await self.__create_request('/api/getSmsCode/', params)
 
-        return SmsCode(**response)
+        return response
+    
+    async def wait_sms_code(self, number: str | Number, timeout: int = 60*5, per_attempt: int = 5) -> str | None:
+        """
+        Wait sms code
 
+        Args:
+            number_id: idNum of number or Number object
+            timeout: maximum time to wait sms code
+            per_attempt: time per attempt
+            
+        Returns: Sms
+        """
+        number_id = number if not type(number) is Number else number.idNum
+        if not self._api_key:
+            raise ValueError('API key is required for this method')
+
+        await self.set_status(number=number_id, status='send')
+        params = {
+            'idNum': number_id,
+            'all': str(None),
+        }
+
+        sms = None
+        start_time = time.time()
+        
+        while time.time() - start_time < timeout:
+            await asyncio.sleep(per_attempt)
+            response = await self.__create_request('/api/getSmsCode/', params)
+            sms = response['smsCode']
+            if type(sms) == list:
+                return sms[-1]
+        
+        return None
+        
     @cached(cache_all_data)
     async def get_count_number_list(self, country: str = 'RU', operator: str | None = None, rent: bool = False):
         """
@@ -276,7 +311,7 @@ class VakSms:
         )
 
         if self._base_url is None:
-            base_urls = ['https://vak-sms.com', 'https://moresms.net', 'https://vaksms.ru/']
+            base_urls = ['https://vak-sms.com', 'https://moresms.net', 'https://vaksms.ru']
 
             for base_url in base_urls:
                 try:

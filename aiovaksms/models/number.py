@@ -1,6 +1,6 @@
-from typing import Optional
+from typing import Any, Optional
 
-from pydantic import BaseModel, RootModel
+from pydantic import BaseModel, Field, RootModel
 import time
 
 not_standart_numbers = {
@@ -18,7 +18,7 @@ not_standart_numbers = {
 }
 
 
-class Number(BaseModel):
+class Number():
     tel: str | int
     service: str
     idNum: str
@@ -26,15 +26,27 @@ class Number(BaseModel):
     lifetime: Optional[int] = 1200
     lives_up_to: Optional[int] = 1200
     
-    def __init__(self, **data):
-        super().__init__(**data)
+    def __init__(self, vaksms_instance, **data):
+        self.vaksms_instance = vaksms_instance
+        
+        for key, value in data.items():
+            setattr(self, key, value)
         if not self.rent:
             self.lifetime = not_standart_numbers.get(self.service, 1200)
             self.lives_up_to = int(time.time() + not_standart_numbers.get(self.service, 1200))
         else:
             self.lifetime = 14400
             self.lives_up_to = int(time.time() + 14400)
+            
+    async def get_sms_code(self, *args, **kwargs):
+        return await self.vaksms_instance.get_sms_code(self, *args, **kwargs)
+        
+    async def wait_sms_code(self, *args, **kwargs):
+        return await self.vaksms_instance.wait_sms_code(self, *args, **kwargs)
+        
+    async def set_status(self, *args, **kwargs):
+        return await self.vaksms_instance.set_status(self, *args, **kwargs)
 
 
-class MultipleResponse(RootModel):
+class MultipleResponse():
     root: list[Number]

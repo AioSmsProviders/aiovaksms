@@ -1,9 +1,10 @@
-/venv/
-/.venv/
-/.idea/
-/build/
-/aiovaksms.egg-info/
-/dist/
-/site/
+venv/
+.venv/
+.idea/
+build/
+aiovaksms.egg-info/
+dist/
+site/
 main.py
 *.pyc
+__pycache__/

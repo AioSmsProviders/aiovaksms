@@ -16,7 +16,7 @@ https://vak-sms.com/api/vak/
 return a pydantic's models for each response. Please write about all problems related to the library
 to [issues](https://github.com/AioSmsProviders/aiovaksms)
 
-API is up-to-date as of *01 October 2024*.
+API is up-to-date as of *22 May 2025*.
 
 * PyPl - https://pypi.org/project/aiovaksms/
 * Github - https://github.com/AioSmsProviders/aiovaksms
@@ -39,7 +39,7 @@ API is up-to-date as of *01 October 2024*.
 
 ## Getting Started
 
-### first steps
+### first steps (new in 3.0 update)
 
 ```python
 import asyncio

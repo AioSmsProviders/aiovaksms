@@ -14,8 +14,8 @@ cache = TTLCache(maxsize=100, ttl=3600)  # 1 hour cache
 cache_countries = TTLCache(maxsize=100, ttl=3600)  # 1 hour cache
 
 
-async def _send_request(base_url: str, uri: str, **kwargs) -> dict[str, ...]:
-    async with aiohttp.ClientSession(base_url) as session:
+async def _send_request(base_url: str, uri: str, proxy: str = None, **kwargs) -> dict[str, ...]:
+    async with aiohttp.ClientSession(base_url, proxy=proxy) as session:
         try:
             async with session.get(uri, **kwargs) as r:
                 response = await r.json(content_type=None)
@@ -36,7 +36,7 @@ class Vaksms:
     """
 
     def __init__(self, api_key: str,
-                 base_url: str | None = None, timeout: int = 10):
+                 base_url: str | None = None, timeout: int = 10, proxy: str = None):
         """
         Creates instance of one vaksms API client
 
@@ -48,6 +48,7 @@ class Vaksms:
         self._api_key = api_key
         self._base_url = base_url
         self._timeout = timeout
+        self._proxy = proxy
 
     async def get_balance(self) -> float:
         """
@@ -315,10 +316,10 @@ class Vaksms:
 
             for base_url in base_urls:
                 try:
-                    r = await _send_request(base_url, uri, **kwargs)
+                    r = await _send_request(base_url, uri, self._proxy, **kwargs)
                     self._base_url = base_url
                     return r
                 except ValueError:
                     logging.warning(f'Failed to connect to {base_url}. Specify explicitly working base url')
 
-        return await _send_request(self._base_url, uri, **kwargs)
+        return await _send_request(self._base_url, uri, self._proxy, **kwargs)

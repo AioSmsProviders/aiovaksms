@@ -15,9 +15,9 @@ cache_countries = TTLCache(maxsize=100, ttl=3600)  # 1 hour cache
 
 
 async def _send_request(base_url: str, uri: str, proxy: str = None, **kwargs) -> dict[str, ...]:
-    async with aiohttp.ClientSession(base_url, proxy=proxy) as session:
+    async with aiohttp.ClientSession(base_url) as session:
         try:
-            async with session.get(uri, **kwargs) as r:
+            async with session.get(uri, proxy=proxy, **kwargs) as r:
                 response = await r.json(content_type=None)
                 if not isinstance(response, dict) or not response.get('error'):
                     return response
